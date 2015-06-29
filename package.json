@@ -1,0 +1,28 @@
+{
+  "name": "icc",
+  "version": "0.0.1",
+  "author": "Lovell Fuller <npm@lovell.info>",
+  "description": "Parse International Color Consortium (ICC) profiles",
+  "scripts": {
+    "test": "node ./node_modules/mocha/bin/mocha ./test/*.js"
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dimensio/icc"
+  },
+  "keywords": [
+    "icc",
+    "color",
+    "colour",
+    "profile"
+  ],
+  "devDependencies": {
+    "mocha": "^2.2.5",
+    "mocha-jshint": "^2.2.3"
+  },
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=0.10"
+  }
+}

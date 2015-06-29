@@ -1,0 +1,10 @@
+{
+  "strict": true,
+  "node": true,
+  "maxparams": 2,
+  "maxcomplexity": 9,
+  "globals": {
+    "describe": true,
+    "it": true
+  }
+}
