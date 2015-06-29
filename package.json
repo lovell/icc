@@ -1,6 +1,6 @@
 {
   "name": "icc",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Lovell Fuller <npm@lovell.info>",
   "description": "Parse International Color Consortium (ICC) profiles",
   "scripts": {

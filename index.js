@@ -27,12 +27,12 @@ var valueMap = {
   'spac': 'Space',
   'nmcl': 'Named color',
   // Platform
-  'APPL': 'Apple',
-  'ADBE': 'Adobe',
-  'MSFT': 'Microsoft',
-  'SUNW': 'Sun Microsystems',
-  'SGI' : 'Silicon Graphics',
-  'TGNT': 'Taligent'
+  'appl': 'Apple',
+  'adbe': 'Adobe',
+  'msft': 'Microsoft',
+  'sunw': 'Sun Microsystems',
+  'sgi' : 'Silicon Graphics',
+  'tgnt': 'Taligent'
 };
 
 var tagMap = {
@@ -44,7 +44,7 @@ var tagMap = {
 
 var getContentAtOffsetAsString = function(buffer, offset) {
   var value = buffer.slice(offset, offset + 4).toString().trim();
-  return (value in valueMap) ? valueMap[value] : value;
+  return (value.toLowerCase() in valueMap) ? valueMap[value.toLowerCase()] : value;
 };
 
 var hasContentAtOffset = function(buffer, offset) {
