@@ -1,19 +1,16 @@
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const assert = require('assert');
 
-var icc = require('../index');
+const icc = require('../index');
 
-var fixture = function(filename) {
-  return fs.readFileSync(path.join(__dirname, 'fixtures', filename));
-};
+const fixture = filename => fs.readFileSync(path.join(__dirname, 'fixtures', filename));
 
-describe('Parse valid ICC profiles', function() {
-
-  it('sRGB', function() {
-    var profile = icc.parse(fixture('sRGB_IEC61966-2-1_black_scaled.icc'));
+describe('Parse valid ICC profiles', () => {
+  it('sRGB', () => {
+    const profile = icc.parse(fixture('sRGB_IEC61966-2-1_black_scaled.icc'));
     assert.deepEqual(profile, {
       version: '2.0',
       intent: 'Perceptual',
@@ -27,8 +24,8 @@ describe('Parse valid ICC profiles', function() {
     });
   });
 
-  it('CMYK', function() {
-    var profile = icc.parse(fixture('USWebCoatedSWOP.icc'));
+  it('CMYK', () => {
+    const profile = icc.parse(fixture('USWebCoatedSWOP.icc'));
     assert.deepEqual(profile, {
       version: '2.1',
       intent: 'Perceptual',
@@ -44,8 +41,8 @@ describe('Parse valid ICC profiles', function() {
     });
   });
 
-  it('XYZ', function() {
-    var profile = icc.parse(fixture('D65_XYZ.icc'));
+  it('XYZ', () => {
+    const profile = icc.parse(fixture('D65_XYZ.icc'));
     assert.deepEqual(profile, {
       version: '2.4',
       intent: 'Relative',
@@ -61,13 +58,12 @@ describe('Parse valid ICC profiles', function() {
       viewingConditionsDescription: 'Reference Viewing Condition in IEC 61966-2-1',
       copyright: 'Copyright Hewlett Packard'
     });
-  });  
-  
+  });
 });
 
-describe('Parse invalid ICC profiles', function() {
-  it('Throws Error', function() {
-    assert.throws(function() {
+describe('Parse invalid ICC profiles', () => {
+  it('Throws Error', () => {
+    assert.throws(() => {
       icc.parse(fs.readFileSync(__filename));
     });
   });

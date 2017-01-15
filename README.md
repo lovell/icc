@@ -1,6 +1,6 @@
 # icc
 
-Node.js module to parse International Color Consortium (ICC) profiles.
+JavaScript module to parse International Color Consortium (ICC) profiles.
 
 ## Installation
 
@@ -9,9 +9,9 @@ Node.js module to parse International Color Consortium (ICC) profiles.
 ## Usage
 
 ```javascript
-var icc = require('icc');
-var profileData = fs.readFileSync('sRGB_IEC61966-2-1_black_scaled.icc');
-var profile = icc.parse(profileData);
+import { parse } from 'icc';
+const profileData = fs.readFileSync('sRGB_IEC61966-2-1_black_scaled.icc');
+const profile = parse(profileData);
 console.dir(profile);
 ```
 outputs:
@@ -35,7 +35,7 @@ Parses `data`, a Buffer containing a raw ICC profile, returning an Object of key
 
 ## Licence
 
-Copyright 2015 Lovell Fuller
+Copyright 2015, 2017 Lovell Fuller
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
