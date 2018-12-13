@@ -39,7 +39,9 @@ const tagMap = {
   'desc': 'description',
   'cprt': 'copyright',
   'dmdd': 'deviceModelDescription',
-  'vued': 'viewingConditionsDescription'
+  'vued': 'viewingConditionsDescription',
+  'wtpt': 'whitepoint',
+  'kTRC': 'greyToneReproductionCurve'
 };
 
 const getContentAtOffsetAsString = (buffer, offset) => {
@@ -92,17 +94,30 @@ module.exports.parse = (buffer) => {
         throw new Error('Invalid ICC profile: Tag offset out of bounds');
       }
       const tagType = getContentAtOffsetAsString(buffer, tagOffset);
-      // desc
       if (tagType === 'desc') {
         const tagValueSize = buffer.readUInt32BE(tagOffset + 8);
         if (tagValueSize > tagSize) {
           throw new Error('Invalid ICC profile: Description tag value size out of bounds for ' + tagSignature);
         }
         profile[tagMap[tagSignature]] = buffer.slice(tagOffset + 12, tagOffset + tagValueSize + 11).toString();
-      }
-      // text
-      if (tagType === 'text') {
+      } else if (tagType === 'text') {
         profile[tagMap[tagSignature]] = buffer.slice(tagOffset + 8, tagOffset + tagSize - 7).toString();
+      } else if (tagType === 'curv') {
+        const entryCount = buffer.readUInt32BE(tagOffset + 8);
+        const entries = [];
+        if (12 + 2 * entryCount > tagSize) {
+          throw new Error('Invalid ICC profile: Curve tag value size out of bounds for ' + tagSignature);
+        }
+        for (let i = 0; i < entryCount; i++) {
+          entries.push(buffer.readUInt16BE(tagOffset + 12 + 2 * i));
+        }
+        profile[tagMap[tagSignature]] = entries;
+      } else if (tagType === 'XYZ') {
+        profile[tagMap[tagSignature]] = [
+          buffer.readInt16BE(tagOffset + 8),
+          buffer.readInt16BE(tagOffset + 12),
+          buffer.readInt16BE(tagOffset + 16)
+        ];
       }
     }
     tagHeaderOffset = tagHeaderOffset + 12;
