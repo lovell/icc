@@ -64,17 +64,17 @@ const parseMft = (buffer, tagOffset, tagType) => {
     outputChannels: buffer.readUInt8(tagOffset + 9),
     clutGridPoints: buffer.readUInt8(tagOffset + 10),
     matrix: [[
-      buffer.readInt16BE(tagOffset + 12),
-      buffer.readInt16BE(tagOffset + 16),
-      buffer.readInt16BE(tagOffset + 20)
+      buffer.readInt32BE(tagOffset + 12) / 65536,
+      buffer.readInt32BE(tagOffset + 16) / 65536,
+      buffer.readInt32BE(tagOffset + 20) / 65536
     ], [
-      buffer.readInt16BE(tagOffset + 24),
-      buffer.readInt16BE(tagOffset + 28),
-      buffer.readInt16BE(tagOffset + 32)
+      buffer.readInt32BE(tagOffset + 24) / 65536,
+      buffer.readInt32BE(tagOffset + 28) / 65536,
+      buffer.readInt32BE(tagOffset + 32) / 65536
     ], [
-      buffer.readInt16BE(tagOffset + 36),
-      buffer.readInt16BE(tagOffset + 40),
-      buffer.readInt16BE(tagOffset + 44)
+      buffer.readInt32BE(tagOffset + 36) / 65536,
+      buffer.readInt32BE(tagOffset + 40) / 65536,
+      buffer.readInt32BE(tagOffset + 44) / 65536
     ]],
     input: [],
     output: []
@@ -195,9 +195,9 @@ module.exports.parse = (buffer) => {
         profile[tagMap[tagSignature]] = entries;
       } else if (tagType === 'XYZ') {
         profile[tagMap[tagSignature]] = [
-          buffer.readInt16BE(tagOffset + 8),
-          buffer.readInt16BE(tagOffset + 12),
-          buffer.readInt16BE(tagOffset + 16)
+          buffer.readInt32BE(tagOffset + 8) / 65536,
+          buffer.readInt32BE(tagOffset + 12) / 65536,
+          buffer.readInt32BE(tagOffset + 16) / 65536
         ];
       }
     }
