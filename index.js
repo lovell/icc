@@ -104,6 +104,28 @@ module.exports.parse = (buffer) => {
       if (tagType === 'text') {
         profile[tagMap[tagSignature]] = buffer.slice(tagOffset + 8, tagOffset + tagSize - 7).toString();
       }
+      if (tagType === 'mluc' && tagSignature in tagMap) {
+        // 4 bytes signature, 4 bytes reserved (must be 0), 4 bytes number of names, 4 bytes name record size (must be 12)
+        const numberOfNames = buffer.readUInt32BE(tagOffset + 8);
+        const nameRecordSize = buffer.readUInt32BE(tagOffset + 12);
+        if (nameRecordSize !== 12) {
+          throw new Error('Unsupported ICC profile: mluc name record size must be 12 for tag ' + tagSignature);
+        }
+        if (numberOfNames > 0) {
+          // Entry: 2 bytes language code, 2 bytes country code, 4 bytes length, 4 bytes offset from start of tag
+          // const languageCode = buffer.slice(tagOffset + 16, tagOffset + 18).toString();
+          // const countryCode = buffer.slice(tagOffset + 18, tagOffset + 20).toString();
+          const nameLength = buffer.readUInt32BE(tagOffset + 20);
+          const nameOffset = buffer.readUInt32BE(tagOffset + 24);
+
+          const data = buffer.slice(tagOffset + nameOffset, tagOffset + nameOffset + nameLength);
+          let value = '';
+          for (let i = 0; i < data.length; i += 2) {
+            value += String.fromCharCode((data[i] * 256) + data[i + 1]);
+          }
+          profile[tagMap[tagSignature]] = value;
+        }
+      }
     }
     tagHeaderOffset = tagHeaderOffset + 12;
   }
