@@ -49,6 +49,15 @@ const getContentAtOffsetAsString = (buffer, offset) => {
 
 const hasContentAtOffset = (buffer, offset) => buffer.readUInt32BE(offset) !== 0;
 
+const readStringUTF16BE = (buffer, start, end) => {
+  const data = buffer.slice(start, end);
+  let value = '';
+  for (let i = 0; i < data.length; i += 2) {
+    value += String.fromCharCode((data[i] * 256) + data[i + 1]);
+  }
+  return value;
+};
+
 module.exports.parse = (buffer) => {
   // Verify expected length
   const size = buffer.readUInt32BE(0);
@@ -117,13 +126,9 @@ module.exports.parse = (buffer) => {
           // const countryCode = buffer.slice(tagOffset + 18, tagOffset + 20).toString();
           const nameLength = buffer.readUInt32BE(tagOffset + 20);
           const nameOffset = buffer.readUInt32BE(tagOffset + 24);
-
-          const data = buffer.slice(tagOffset + nameOffset, tagOffset + nameOffset + nameLength);
-          let value = '';
-          for (let i = 0; i < data.length; i += 2) {
-            value += String.fromCharCode((data[i] * 256) + data[i + 1]);
-          }
-          profile[tagMap[tagSignature]] = value;
+          const nameStart = tagOffset + nameOffset;
+          const nameStop = nameStart + nameLength;
+          profile[tagMap[tagSignature]] = readStringUTF16BE(buffer, nameStart, nameStop);
         }
       }
     }
