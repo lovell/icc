@@ -59,6 +59,21 @@ describe('Parse valid ICC profiles', () => {
       copyright: 'Copyright Hewlett Packard'
     });
   });
+
+  it('Process \'mluc\' tags', () => {
+    const profile = icc.parse(fixture('ILFORD_CANpro-4000_GPGFG_ProPlatin.icc'));
+    assert.deepEqual(profile, {
+      version: '4.2',
+      intent: 'Perceptual',
+      deviceClass: 'Printer',
+      colorSpace: 'RGB',
+      connectionSpace: 'Lab',
+      creator: 'XRCM',
+      platform: 'Microsoft',
+      description: 'ILFORD_CANpro-4000_GPGFG_ProPlatin.icc',
+      copyright: 'Copyright X-Rite, Inc.'
+    });
+  });
 });
 
 describe('Parse invalid ICC profiles', () => {
