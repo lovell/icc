@@ -4,7 +4,7 @@
   "author": "Lovell Fuller <npm@lovell.info>",
   "description": "Parse International Color Consortium (ICC) profiles",
   "scripts": {
-    "test": "semistandard && mocha"
+    "test": "semistandard && nyc mocha"
   },
   "main": "index.js",
   "repository": {
@@ -18,16 +18,24 @@
     "profile"
   ],
   "devDependencies": {
-    "mocha": "^3.2.0",
-    "semistandard": "^9.2.1"
+    "mocha": "^8.0.1",
+    "nyc": "^15.1.0",
+    "semistandard": "^14.2.2"
   },
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=4"
+    "node": ">=10"
   },
   "semistandard": {
     "env": [
       "mocha"
     ]
+  },
+  "nyc": {
+    "check-coverage": true,
+    "statements": 95,
+    "branches": 84,
+    "functions": 100,
+    "lines": 94
   }
 }

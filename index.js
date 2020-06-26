@@ -20,27 +20,27 @@ const intentMap = {
 
 const valueMap = {
   // Device
-  'scnr': 'Scanner',
-  'mntr': 'Monitor',
-  'prtr': 'Printer',
-  'link': 'Link',
-  'abst': 'Abstract',
-  'spac': 'Space',
-  'nmcl': 'Named color',
+  scnr: 'Scanner',
+  mntr: 'Monitor',
+  prtr: 'Printer',
+  link: 'Link',
+  abst: 'Abstract',
+  spac: 'Space',
+  nmcl: 'Named color',
   // Platform
-  'appl': 'Apple',
-  'adbe': 'Adobe',
-  'msft': 'Microsoft',
-  'sunw': 'Sun Microsystems',
-  'sgi': 'Silicon Graphics',
-  'tgnt': 'Taligent'
+  appl: 'Apple',
+  adbe: 'Adobe',
+  msft: 'Microsoft',
+  sunw: 'Sun Microsystems',
+  sgi: 'Silicon Graphics',
+  tgnt: 'Taligent'
 };
 
 const tagMap = {
-  'desc': 'description',
-  'cprt': 'copyright',
-  'dmdd': 'deviceModelDescription',
-  'vued': 'viewingConditionsDescription'
+  desc: 'description',
+  cprt: 'copyright',
+  dmdd: 'deviceModelDescription',
+  vued: 'viewingConditionsDescription'
 };
 
 const getContentAtOffsetAsString = (buffer, offset) => {
@@ -59,16 +59,18 @@ const readStringUTF16BE = (buffer, start, end) => {
   return value;
 };
 
+const invalid = (reason) => new Error(`Invalid ICC profile: ${reason}`);
+
 module.exports.parse = (buffer) => {
   // Verify expected length
   const size = buffer.readUInt32BE(0);
   if (size !== buffer.length) {
-    throw new Error('Invalid ICC profile: length mismatch');
+    throw invalid('length mismatch');
   }
   // Verify 'acsp' signature
   const signature = buffer.slice(36, 40).toString();
   if (signature !== 'acsp') {
-    throw new Error('Invalid ICC profile: missing signature');
+    throw invalid('missing signature');
   }
   // Integer attributes
   const profile = {
@@ -99,14 +101,14 @@ module.exports.parse = (buffer) => {
       const tagOffset = buffer.readUInt32BE(tagHeaderOffset + 4);
       const tagSize = buffer.readUInt32BE(tagHeaderOffset + 8);
       if (tagOffset > buffer.length) {
-        throw new Error('Invalid ICC profile: Tag offset out of bounds');
+        throw invalid('tag offset out of bounds');
       }
       const tagType = getContentAtOffsetAsString(buffer, tagOffset);
       // desc
       if (tagType === 'desc') {
         const tagValueSize = buffer.readUInt32BE(tagOffset + 8);
         if (tagValueSize > tagSize) {
-          throw new Error('Invalid ICC profile: Description tag value size out of bounds for ' + tagSignature);
+          throw invalid(`description tag value size out of bounds for ${tagSignature}`);
         }
         profile[tagMap[tagSignature]] = buffer.slice(tagOffset + 12, tagOffset + tagValueSize + 11).toString();
       }
@@ -119,7 +121,7 @@ module.exports.parse = (buffer) => {
         const numberOfNames = buffer.readUInt32BE(tagOffset + 8);
         const nameRecordSize = buffer.readUInt32BE(tagOffset + 12);
         if (nameRecordSize !== 12) {
-          throw new Error('Unsupported ICC profile: mluc name record size must be 12 for tag ' + tagSignature);
+          throw invalid(`mluc name record size must be 12 for tag ${tagSignature}`);
         }
         if (numberOfNames > 0) {
           // Entry: 2 bytes language code, 2 bytes country code, 4 bytes length, 4 bytes offset from start of tag

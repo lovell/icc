@@ -35,7 +35,7 @@ Parses `data`, a Buffer containing a raw ICC profile, returning an Object of key
 
 ## Licence
 
-Copyright 2015, 2017 Lovell Fuller
+Copyright 2015, 2017, 2020 Lovell Fuller
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

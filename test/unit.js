@@ -11,7 +11,7 @@ const fixture = filename => fs.readFileSync(path.join(__dirname, 'fixtures', fil
 describe('Parse valid ICC profiles', () => {
   it('sRGB', () => {
     const profile = icc.parse(fixture('sRGB_IEC61966-2-1_black_scaled.icc'));
-    assert.deepEqual(profile, {
+    assert.deepStrictEqual(profile, {
       version: '2.0',
       intent: 'Perceptual',
       deviceClass: 'Monitor',
@@ -26,7 +26,7 @@ describe('Parse valid ICC profiles', () => {
 
   it('CMYK', () => {
     const profile = icc.parse(fixture('USWebCoatedSWOP.icc'));
-    assert.deepEqual(profile, {
+    assert.deepStrictEqual(profile, {
       version: '2.1',
       intent: 'Perceptual',
       cmm: 'Adobe',
@@ -43,7 +43,7 @@ describe('Parse valid ICC profiles', () => {
 
   it('XYZ', () => {
     const profile = icc.parse(fixture('D65_XYZ.icc'));
-    assert.deepEqual(profile, {
+    assert.deepStrictEqual(profile, {
       version: '2.4',
       intent: 'Relative',
       cmm: 'none',
@@ -62,7 +62,7 @@ describe('Parse valid ICC profiles', () => {
 
   it('Process \'mluc\' tags', () => {
     const profile = icc.parse(fixture('ILFORD_CANpro-4000_GPGFG_ProPlatin.icc'));
-    assert.deepEqual(profile, {
+    assert.deepStrictEqual(profile, {
       version: '4.2',
       intent: 'Perceptual',
       deviceClass: 'Printer',
@@ -77,9 +77,15 @@ describe('Parse valid ICC profiles', () => {
 });
 
 describe('Parse invalid ICC profiles', () => {
-  it('Throws Error', () => {
+  it('Detects invalid length', () => {
     assert.throws(() => {
-      icc.parse(fs.readFileSync(__filename));
-    });
+      icc.parse(Buffer.alloc(4));
+    }, /Invalid ICC profile: length mismatch/);
+  });
+
+  it('Detects invalid signature', () => {
+    assert.throws(() => {
+      icc.parse(Buffer.from([0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00]));
+    }, /Invalid ICC profile: missing signature/);
   });
 });
