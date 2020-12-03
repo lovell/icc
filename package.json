@@ -11,6 +11,7 @@
     "type": "git",
     "url": "git://github.com/lovell/icc"
   },
+  "files": [],
   "keywords": [
     "icc",
     "color",
@@ -18,9 +19,9 @@
     "profile"
   ],
   "devDependencies": {
-    "mocha": "^8.0.1",
+    "mocha": "^8.2.1",
     "nyc": "^15.1.0",
-    "semistandard": "^14.2.2"
+    "semistandard": "^16.0.0"
   },
   "license": "Apache-2.0",
   "engines": {

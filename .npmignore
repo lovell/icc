@@ -1,6 +1,0 @@
-node_modules
-.gitignore
-test
-.travis.yml
-package-lock.json
-.nyc_output
