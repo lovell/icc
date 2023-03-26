@@ -40,7 +40,8 @@ const tagMap = {
   desc: 'description',
   cprt: 'copyright',
   dmdd: 'deviceModelDescription',
-  vued: 'viewingConditionsDescription'
+  vued: 'viewingConditionsDescription',
+  wtpt: 'whitepoint'
 };
 
 const getContentAtOffsetAsString = (buffer, offset) => {
@@ -133,6 +134,13 @@ module.exports.parse = (buffer) => {
           const nameStop = nameStart + nameLength;
           profile[tagMap[tagSignature]] = readStringUTF16BE(buffer, nameStart, nameStop);
         }
+      }
+      if (tagType === 'XYZ') {
+        profile[tagMap[tagSignature]] = [
+          buffer.readInt32BE(tagOffset + 8) / 65536,
+          buffer.readInt32BE(tagOffset + 12) / 65536,
+          buffer.readInt32BE(tagOffset + 16) / 65536
+        ];
       }
     }
     tagHeaderOffset = tagHeaderOffset + 12;

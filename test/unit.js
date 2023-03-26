@@ -20,7 +20,8 @@ describe('Parse valid ICC profiles', () => {
       deviceModelDescription: 'IEC 61966-2-1 Default RGB Colour Space - sRGB',
       intent: 'Perceptual',
       version: '2.0',
-      viewingConditionsDescription: 'Reference Viewing Condition in IEC 61966-2-1'
+      viewingConditionsDescription: 'Reference Viewing Condition in IEC 61966-2-1',
+      whitepoint: [0.964202880859375, 1, 0.8249053955078125]
     });
   });
 
@@ -35,7 +36,8 @@ describe('Parse valid ICC profiles', () => {
       deviceClass: 'Monitor',
       intent: 'Perceptual',
       platform: 'Microsoft',
-      version: '4.3'
+      version: '4.3',
+      whitepoint: [0.964202880859375, 1, 0.8249053955078125]
     });
   });
 
@@ -52,7 +54,8 @@ describe('Parse valid ICC profiles', () => {
       intent: 'Perceptual',
       manufacturer: 'Adobe',
       platform: 'Apple',
-      version: '2.1'
+      version: '2.1',
+      whitepoint: [0.708404541015625, 0.7359466552734375, 0.571044921875]
     });
   });
 
@@ -71,7 +74,8 @@ describe('Parse valid ICC profiles', () => {
       manufacturer: 'none',
       model: 'none',
       version: '2.4',
-      viewingConditionsDescription: 'Reference Viewing Condition in IEC 61966-2-1'
+      viewingConditionsDescription: 'Reference Viewing Condition in IEC 61966-2-1',
+      whitepoint: [0.964202880859375, 1, 0.8249053955078125]
     });
   });
 
@@ -86,7 +90,8 @@ describe('Parse valid ICC profiles', () => {
       deviceClass: 'Printer',
       intent: 'Perceptual',
       platform: 'Microsoft',
-      version: '4.2'
+      version: '4.2',
+      whitepoint: [0.954559326171875, 0.989593505859375, 0.8075714111328125]
     });
   });
 
@@ -104,7 +109,8 @@ describe('Parse valid ICC profiles', () => {
       manufacturer: 'ICC',
       model: 'PAWG',
       platform: 'Microsoft',
-      version: '2.0'
+      version: '2.0',
+      whitepoint: [0.75, 0.5, 0.25]
     });
   });
 
@@ -122,7 +128,8 @@ describe('Parse valid ICC profiles', () => {
       manufacturer: 'ICC',
       model: 'PAWG',
       platform: 'Microsoft',
-      version: '4.0'
+      version: '4.0',
+      whitepoint: [0.75, 0.5, 0.25]
     });
   });
 });
