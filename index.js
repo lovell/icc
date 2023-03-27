@@ -1,3 +1,6 @@
+// Copyright 2015 Lovell Fuller and others.
+// SPDX-License-Identifier: Apache-2.0
+
 'use strict';
 
 // http://www.color.org/profileheader.xalter
@@ -8,7 +11,8 @@ const versionMap = {
   0x02400000: '2.4',
   0x04000000: '4.0',
   0x04200000: '4.2',
-  0x04300000: '4.3'
+  0x04300000: '4.3',
+  0x04400000: '4.4'
 };
 
 const intentMap = {
