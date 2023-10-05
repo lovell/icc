@@ -11,10 +11,16 @@ const icc = require('../index');
 
 const fixture = filename => fs.readFileSync(path.join(__dirname, 'fixtures', filename));
 
+const getProfileData = (profile) => {
+  const clutFields = ['gamut', 'A2B0', 'A2B1', 'A2B2', 'B2A0', 'B2A1', 'B2A2'];
+  return Object.fromEntries(Object.entries(profile).filter((e) => clutFields.indexOf(e[0]) === -1));
+};
+
 describe('Parse valid ICC profiles', () => {
   it('sRGB v2', () => {
     const profile = icc.parse(fixture('sRGB_IEC61966-2-1_black_scaled.icc'));
-    assert.deepStrictEqual(profile, {
+    const profileData = getProfileData(profile);
+    assert.deepStrictEqual(profileData, {
       colorSpace: 'RGB',
       connectionSpace: 'XYZ',
       copyright: 'Copyright International Color Consortium',
@@ -30,7 +36,8 @@ describe('Parse valid ICC profiles', () => {
 
   it('sRGB v4', () => {
     const profile = icc.parse(fixture('sRGB_ICC_v4_Appearance.icc'));
-    assert.deepStrictEqual(profile, {
+    const profileData = getProfileData(profile);
+    assert.deepStrictEqual(profileData, {
       colorSpace: 'RGB',
       connectionSpace: 'Lab',
       copyright: 'COPYRIGHT(c) 2010-2016 Fuji Xerox Co., Ltd.',
@@ -46,7 +53,8 @@ describe('Parse valid ICC profiles', () => {
 
   it('CMYK', () => {
     const profile = icc.parse(fixture('USWebCoatedSWOP.icc'));
-    assert.deepStrictEqual(profile, {
+    const profileData = getProfileData(profile);
+    assert.deepStrictEqual(profileData, {
       cmm: 'Adobe',
       colorSpace: 'CMYK',
       connectionSpace: 'Lab',
@@ -64,7 +72,8 @@ describe('Parse valid ICC profiles', () => {
 
   it('XYZ', () => {
     const profile = icc.parse(fixture('D65_XYZ.icc'));
-    assert.deepStrictEqual(profile, {
+    const profileData = getProfileData(profile);
+    assert.deepStrictEqual(profileData, {
       cmm: 'none',
       colorSpace: 'RGB',
       connectionSpace: 'XYZ',
@@ -84,7 +93,8 @@ describe('Parse valid ICC profiles', () => {
 
   it('Process \'mluc\' tags', () => {
     const profile = icc.parse(fixture('ILFORD_CANpro-4000_GPGFG_ProPlatin.icc'));
-    assert.deepStrictEqual(profile, {
+    const profileData = getProfileData(profile);
+    assert.deepStrictEqual(profileData, {
       colorSpace: 'RGB',
       connectionSpace: 'Lab',
       copyright: 'Copyright X-Rite, Inc.',
@@ -100,7 +110,8 @@ describe('Parse valid ICC profiles', () => {
 
   it('Probe v2', () => {
     const profile = icc.parse(fixture('Probev1_ICCv2.icc'));
-    assert.deepStrictEqual(profile, {
+    const profileData = getProfileData(profile);
+    assert.deepStrictEqual(profileData, {
       cmm: 'LINO',
       colorSpace: 'CMYK',
       connectionSpace: 'Lab',
@@ -119,7 +130,8 @@ describe('Parse valid ICC profiles', () => {
 
   it('Probe v4', () => {
     const profile = icc.parse(fixture('Probev1_ICCv4.icc'));
-    assert.deepStrictEqual(profile, {
+    const profileData = getProfileData(profile);
+    assert.deepStrictEqual(profileData, {
       cmm: 'LINO',
       colorSpace: 'CMYK',
       connectionSpace: 'Lab',
@@ -134,6 +146,47 @@ describe('Parse valid ICC profiles', () => {
       version: '4.0',
       whitepoint: [0.75, 0.5, 0.25]
     });
+  });
+});
+
+describe('Parses CLUT tables and transforms', () => {
+  it('B2A transforms', () => {
+    const profile = icc.parse(fixture('Probev1_ICCv2.icc'));
+    const B2A0Min = profile.B2A0.transform([0, 0, 0]);
+    assert.deepStrictEqual(B2A0Min, [1, 0, 0, 0]);
+    const B2A0Max = profile.B2A0.transform([1, 0, 0]);
+    assert.deepStrictEqual(B2A0Max, [0, 0, 0, 0]);
+    const B2A1Min = profile.B2A1.transform([0, 0, 0]);
+    assert.deepStrictEqual(B2A1Min, [0, 1, 0, 0]);
+    const B2A1Max = profile.B2A1.transform([1, 0, 0]);
+    assert.deepStrictEqual(B2A1Max, [0, 0, 0, 0]);
+    const B2A2Min = profile.B2A2.transform([0, 0, 0]);
+    assert.deepStrictEqual(B2A2Min, [0, 0, 1, 0]);
+    const B2A2Max = profile.B2A2.transform([1, 0, 0]);
+    assert.deepStrictEqual(B2A2Max, [0, 0, 0, 0]);
+  });
+
+  it('A2B transforms', () => {
+    const profile = icc.parse(fixture('Probev1_ICCv2.icc'));
+    const A2B0Min = profile.A2B0.transform([1, 1, 1, 1]);
+    assert.deepStrictEqual(A2B0Min[0] >= 0.7 && A2B0Min[0] <= 1, true);
+    const A2B0Max = profile.A2B0.transform([0, 0, 0, 0]);
+    assert.deepStrictEqual(A2B0Max[0] >= 0.7 && A2B0Max[0] <= 1, true);
+    const A2B1Min = profile.A2B1.transform([1, 1, 1, 1]);
+    assert.deepStrictEqual(A2B1Min[0] >= 0.3 && A2B1Min[0] <= 0.7, true);
+    const A2B1Max = profile.A2B1.transform([0, 0, 0, 0]);
+    assert.deepStrictEqual(A2B1Max[0] >= 0.3 && A2B1Max[0] <= 0.7, true);
+    const A2B2Min = profile.A2B2.transform([1, 1, 1, 1]);
+    assert.deepStrictEqual(A2B2Min[0] >= 0 && A2B2Min[0] <= 0.3, true);
+    const A2B2Max = profile.A2B2.transform([0, 0, 0, 0]);
+    assert.deepStrictEqual(A2B2Max[0] >= 0 && A2B2Max[0] <= 0.3, true);
+  });
+
+  it('Detect invalid transform input', () => {
+    assert.throws(() => {
+      const profile = icc.parse(fixture('Probev1_ICCv2.icc'));
+      profile.B2A0.transform([0, 0, 0, 0]);
+    }, /Wrong number of inputs/);
   });
 });
 
