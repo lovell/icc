@@ -45,7 +45,14 @@ const tagMap = {
   cprt: 'copyright',
   dmdd: 'deviceModelDescription',
   vued: 'viewingConditionsDescription',
-  wtpt: 'whitepoint'
+  wtpt: 'whitepoint',
+  gamt: 'gamut',
+  A2B0: 'A2B0',
+  A2B1: 'A2B1',
+  A2B2: 'A2B2',
+  B2A0: 'B2A0',
+  B2A1: 'B2A1',
+  B2A2: 'B2A2'
 };
 
 const getContentAtOffsetAsString = (buffer, offset) => {
@@ -65,6 +72,101 @@ const readStringUTF16BE = (buffer, start, end) => {
 };
 
 const invalid = (reason) => new Error(`Invalid ICC profile: ${reason}`);
+
+const parseMft = (buffer, tagOffset, tagType) => {
+  const data = {
+    inputChannels: buffer.readUInt8(tagOffset + 8),
+    outputChannels: buffer.readUInt8(tagOffset + 9),
+    clutGridPoints: buffer.readUInt8(tagOffset + 10),
+    matrix: [[
+      buffer.readInt32BE(tagOffset + 12) / 65536,
+      buffer.readInt32BE(tagOffset + 16) / 65536,
+      buffer.readInt32BE(tagOffset + 20) / 65536
+    ], [
+      buffer.readInt32BE(tagOffset + 24) / 65536,
+      buffer.readInt32BE(tagOffset + 28) / 65536,
+      buffer.readInt32BE(tagOffset + 32) / 65536
+    ], [
+      buffer.readInt32BE(tagOffset + 36) / 65536,
+      buffer.readInt32BE(tagOffset + 40) / 65536,
+      buffer.readInt32BE(tagOffset + 44) / 65536
+    ]],
+    input: [],
+    output: []
+  };
+
+  let offset = tagOffset + 48;
+
+  const readInt = () => {
+    if (tagType === 'mft1') {
+      offset += 1;
+
+      return buffer.readUInt8(offset - 1);
+    } else {
+      offset += 2;
+
+      return buffer.readUInt16BE(offset - 2);
+    }
+  };
+
+  const inputCount = tagType === 'mft1' ? 256 : readInt();
+  const outputCount = tagType === 'mft1' ? 256 : readInt();
+
+  for (let j = 0; j < data.inputChannels; j++) {
+    const table = [];
+
+    for (let i = 0; i < inputCount; i++) {
+      table.push(readInt());
+    }
+
+    data.input.push(table);
+  }
+
+  const getClutRecursive = (dim) => {
+    const values = [];
+
+    if (dim === 0) {
+      for (let i = 0; i < data.outputChannels; i++) {
+        values.push(readInt());
+      }
+    } else {
+      for (let i = 0; i < data.clutGridPoints; i++) {
+        values.push(getClutRecursive(dim - 1));
+      }
+    }
+
+    return values;
+  };
+
+  data.clut = getClutRecursive(data.inputChannels);
+
+  for (let j = 0; j < data.outputChannels; j++) {
+    const table = [];
+
+    for (let i = 0; i < outputCount; i++) {
+      table.push(readInt());
+    }
+
+    data.output.push(table);
+  }
+
+  data.transform = (color) => {
+    if (!color || data.inputChannels !== color.length) {
+      throw invalid('Wrong number of inputs');
+    } else {
+      const factor = tagType === 'mft1' ? 255 : 65535;
+      const inputColor = color.map((v, i) => data.input[i][Math.floor(v * (data.input[i].length - 1))]);
+      const inputColorForClut = inputColor.map((v) => Math.floor(v / factor * (data.clutGridPoints - 1)));
+      const clutValue = inputColorForClut.reduce((clut, v) => clut[v], data.clut);
+      const clutValueForOutput = clutValue.map((v, i) => Math.floor(v / factor * (data.output[i].length - 1)));
+      const outputValue = clutValueForOutput.map((v, i) => data.output[i][v]);
+      const outputColor = outputValue.map((v) => v / factor);
+      return outputColor;
+    }
+  };
+
+  return data;
+};
 
 module.exports.parse = (buffer) => {
   // Verify expected length
@@ -145,6 +247,9 @@ module.exports.parse = (buffer) => {
           buffer.readInt32BE(tagOffset + 12) / 65536,
           buffer.readInt32BE(tagOffset + 16) / 65536
         ];
+      }
+      if (tagType === 'mft1' || tagType === 'mft2') {
+        profile[tagMap[tagSignature]] = parseMft(buffer, tagOffset, tagType);
       }
     }
     tagHeaderOffset = tagHeaderOffset + 12;
