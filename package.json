@@ -4,13 +4,15 @@
   "author": "Lovell Fuller <npm@lovell.info>",
   "description": "Parse International Color Consortium (ICC) profiles",
   "scripts": {
-    "test": "semistandard && nyc mocha && tsd"
+    "test": "node --test --experimental-test-coverage test/unit.js",
+    "lint-js": "biome lint",
+    "lint-types": "tsd --files ./test/index.test-d.ts"
   },
   "main": "index.js",
   "types": "index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git://github.com/lovell/icc"
+    "url": "git://github.com/lovell/icc.git"
   },
   "files": [
     "index.d.ts"
@@ -22,29 +24,12 @@
     "profile"
   ],
   "devDependencies": {
+    "@biomejs/biome": "^2.4.13",
     "@types/node": "*",
-    "mocha": "^10.2.0",
-    "nyc": "^15.1.0",
-    "semistandard": "^16.0.1",
-    "tsd": "^0.28.0"
+    "tsd": "^0.33.0"
   },
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=14"
-  },
-  "semistandard": {
-    "env": [
-      "mocha"
-    ]
-  },
-  "nyc": {
-    "check-coverage": true,
-    "statements": 95,
-    "branches": 85,
-    "functions": 100,
-    "lines": 94
-  },
-  "tsd": {
-    "directory": "test"
+    "node": ">=20"
   }
 }

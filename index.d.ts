@@ -1,5 +1,7 @@
-// Copyright 2015 Lovell Fuller and others.
-// SPDX-License-Identifier: Apache-2.0
+/*!
+  Copyright 2015 Lovell Fuller and others.
+  SPDX-License-Identifier: Apache-2.0
+*/
 
 /// <reference types="node" />
 

@@ -1,7 +1,7 @@
-// Copyright 2015 Lovell Fuller and others.
-// SPDX-License-Identifier: Apache-2.0
-
-'use strict';
+/*!
+  Copyright 2015 Lovell Fuller and others.
+  SPDX-License-Identifier: Apache-2.0
+*/
 
 // http://www.color.org/profileheader.xalter
 

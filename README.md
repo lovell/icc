@@ -24,7 +24,7 @@ outputs:
   description: 'sRGB IEC61966-2-1 black scaled',
   deviceModelDescription: 'IEC 61966-2-1 Default RGB Colour Space - sRGB',
   viewingConditionsDescription: 'Reference Viewing Condition in IEC 61966-2-1',
-  copyright: 'Copyright International Color Consortium'}
+  copyright: 'Copyright International Color Consortium, 2009'}
 ```
 
 ## API

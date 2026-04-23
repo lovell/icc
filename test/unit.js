@@ -1,11 +1,12 @@
-// Copyright 2015 Lovell Fuller and others.
-// SPDX-License-Identifier: Apache-2.0
+/*!
+  Copyright 2015 Lovell Fuller and others.
+  SPDX-License-Identifier: Apache-2.0
+*/
 
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
-const assert = require('assert');
+const fs = require('node:fs');
+const path = require('node:path');
+const assert = require('node:assert');
+const { describe, it } = require('node:test');
 
 const icc = require('../index');
 

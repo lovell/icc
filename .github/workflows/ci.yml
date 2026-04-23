@@ -1,19 +1,38 @@
+name: CI
 on:
   - push
   - pull_request
+permissions: {}
 jobs:
-  CI:
-    runs-on: ubuntu-22.04
+  test:
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         node-version:
-          - 14
-          - 16
-          - 18
+          - 20
+          - 22
+          - 24
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm install
-    - run: npm test
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run lint-js
+      - run: npm run lint-types
+      - run: npm test
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: read
+      id-token: write
+    needs: test
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: npm publish --tag=${{ contains(github.ref, '-rc') && 'rc' || 'latest' }}
