@@ -119,7 +119,7 @@ module.exports.parse = (buffer) => {
       }
       // text
       if (tagType === 'text') {
-        profile[tagMap[tagSignature]] = buffer.slice(tagOffset + 8, tagOffset + tagSize - 7).toString();
+        profile[tagMap[tagSignature]] = buffer.slice(tagOffset + 8, tagOffset + tagSize).toString().replace(/\0+$/, '');
       }
       if (tagType === 'mluc' && tagSignature in tagMap) {
         // 4 bytes signature, 4 bytes reserved (must be 0), 4 bytes number of names, 4 bytes name record size (must be 12)
